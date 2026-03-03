@@ -1,55 +1,44 @@
-# Edit the .env file
 cd /mnt/c/Users/Arun\ Joseph/Documents/blueberryhills/blueberry-hms
 
-# Update DB_HOST from "postgres" to "localhost"
-cat > .env << 'EOF'
-# === BLUEBERRY HMS CONFIGURATION ===
+cat >> README.md << 'EOF'
 
-# === PROJECT DETAILS ===
-PROJECT_NAME="Blueberry HMS"
-PROPERTY_NAME="Blueberry Hills Resort"
-PROPERTY_DOMAIN="blueberryhillsmunnar.in"
-NODE_ENV=development
+## 🎯 Phase 1: COMPLETE ✅
 
-# === DATABASE (PostgreSQL) ===
-# IMPORTANT: Use "localhost" when running API outside Docker
-# Use "postgres" only when API runs inside Docker
-DB_HOST=localhost
-DB_PORT=5432
-DB_USER=blueberry_admin
-DB_PASSWORD=change_this_password_in_production
-DB_NAME=blueberry_hms
+### Infrastructure
+- PostgreSQL database running on port 5432
+- Redis cache running on port 6379
+- Keycloak authentication on port 8080
+- PgAdmin on port 5050
 
-# === API CONFIGURATION ===
-API_PORT=4000
-API_URL=http://localhost:4000
+### Core API
+- NestJS application on port 4000
+- API Documentation: http://localhost:4000/api/docs
+- Health Check: http://localhost:4000/api/v1/health
 
-# === AUTHENTICATION (Keycloak) ===
-KEYCLOAK_URL=http://localhost:8080
-KEYCLOAK_REALM=blueberry
-KEYCLOAK_CLIENT_ID=hms-backend
-KEYCLOAK_CLIENT_SECRET=your-secret-here
+### Modules Implemented
+1. **Property Management**
+   - CRUD operations for property details
+   - Active property selection
+   - Settings storage (JSONB)
 
-# === CMS (Strapi) ===
-STRAPI_PORT=1337
-STRAPI_URL=http://localhost:1337
-STRAPI_ADMIN_EMAIL=admin@blueberryhillsmunnar.in
-STRAPI_ADMIN_PASSWORD=change_this_in_production
-
-# === FRONTEND PORTS ===
-GUEST_WEB_PORT=3000
-ADMIN_PANEL_PORT=5173
-POS_PORT=5174
-
-# === SECURITY ===
-JWT_SECRET=super_long_random_string_change_in_production_min_32_chars
-JWT_EXPIRATION=7d
-
-# === REDIS (Cache & Queues) ===
-REDIS_HOST=localhost
-REDIS_PORT=6379
-
-# === FILE UPLOADS ===
-UPLOAD_PATH=./uploads
-MAX_FILE_SIZE=10485760
-EOF
+### Database Schema
+```sql
+-- Properties table created automatically by TypeORM
+CREATE TABLE properties (
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  name VARCHAR(200) NOT NULL,
+  tagline VARCHAR(500),
+  domain_url VARCHAR(100) NOT NULL,
+  logo_path VARCHAR,
+  address TEXT,
+  city VARCHAR(100),
+  state VARCHAR(100),
+  pincode VARCHAR(20),
+  country VARCHAR(100),
+  phone VARCHAR(20),
+  email VARCHAR(100),
+  settings JSONB DEFAULT '{}',
+  is_active BOOLEAN DEFAULT true,
+  created_at TIMESTAMP DEFAULT NOW(),
+  updated_at TIMESTAMP DEFAULT NOW()
+);
