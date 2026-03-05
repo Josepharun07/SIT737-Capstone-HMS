@@ -1,29 +1,7 @@
-cat > src/common/entities/base.entity.ts << 'EOF'
-import {
-  PrimaryGeneratedColumn,
-  CreateDateColumn,
-  UpdateDateColumn,
-  DeleteDateColumn,
-} from 'typeorm';
+cd /mnt/c/Users/Arun\ Joseph/Documents/blueberryhills/blueberry-hms/apps/api-core
 
-/**
- * Base Entity for all database models
- * Provides: UUID primary key, timestamps, soft delete
- * 
- * All entities in Blueberry HMS extend this class
- * to ensure consistent data tracking and audit capability
- */
-export abstract class BaseEntity {
-  @PrimaryGeneratedColumn('uuid')
-  id: string;
-
-  @CreateDateColumn({ name: 'created_at' })
-  createdAt: Date;
-
-  @UpdateDateColumn({ name: 'updated_at' })
-  updatedAt: Date;
-
-  @DeleteDateColumn({ name: 'deleted_at', nullable: true })
-  deletedAt: Date | null;
-}
-EOF
+# Create auth directories
+mkdir -p src/modules/auth/dto
+mkdir -p src/modules/auth/strategies
+mkdir -p src/common/guards
+mkdir -p src/common/decorators
