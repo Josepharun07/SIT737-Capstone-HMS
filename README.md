@@ -74,7 +74,7 @@ graph TD
 ### Quick Start
 1. **Clone & Install:**
    ```bash
-   git clone https://github.com/mattel-group/blueberry-hms.git
+   git clone https://github.com/Josepharun07/Blueberry-HMS.git
    cd blueberry-hms
    pnpm install
    ```
@@ -179,81 +179,3 @@ graph TD
 ---
 
 **Developed for Mattel Group by Technical Team.**
-EOF
-
-echo "✅ Updated README.md generated successfully!"
-```
-
----
-
-### **Part 2: Fixing the Test 9 Failure**
-
-The error you received in the previous turn was:
-`"message": "Cannot PATCH /api/v1/bookings/"`
-
-**Cause:** The variable `$BOOKING_ID` was empty in your terminal session, so the command became `PATCH .../bookings/` (missing the ID), which is not a valid route.
-
-**Solution:** We need to fetch an existing Booking ID and then run the update command.
-
-Run these commands to verify Phase 4 is 100% working:
-
-#### **1. Fetch a Valid Booking ID**
-```bash
-# Fetch the most recent booking ID
-BOOKING_ID=$(curl -s http://localhost:4000/api/v1/bookings | jq -r '.[0].id')
-
-echo "Found Booking ID: $BOOKING_ID"
-```
-
-#### **2. Retry Test 9 (Update Payment)**
-```bash
-curl -X PATCH http://localhost:4000/api/v1/bookings/$BOOKING_ID \
-  -H "Content-Type: application/json" \
-  -d '{
-    "paidAmount": 11200,
-    "paymentMethod": "UPI",
-    "status": "CONFIRMED"
-  }' | jq
-```
-*Expected: Status changes to CONFIRMED, PaymentStatus changes to PAID.*
-
-#### **3. Verify Remaining Tests (Check-in/Check-out)**
-We need to assign a room before checking in.
-
-**A. Get a Room ID:**
-```bash
-ROOM_ID=$(curl -s http://localhost:4000/api/v1/rooms | jq -r '.[0].id')
-echo "Found Room ID: $ROOM_ID"
-```
-
-**B. Assign Room:**
-```bash
-curl -X PATCH http://localhost:4000/api/v1/bookings/$BOOKING_ID/assign-room/$ROOM_ID | jq
-```
-
-**C. Check In:**
-```bash
-curl -X POST http://localhost:4000/api/v1/bookings/$BOOKING_ID/check-in | jq
-```
-*Expected: Booking Status: CHECKED_IN*
-
-**D. Check Out:**
-```bash
-curl -X POST http://localhost:4000/api/v1/bookings/$BOOKING_ID/check-out | jq
-```
-*Expected: Booking Status: CHECKED_OUT*
-
----
-
-### **Part 3: Moving Forward**
-
-Once you confirm the manual tests above pass, Phase 4 is officially complete.
-
-**The Backend Core is now fully functional.**
-1.  **Users** can login.
-2.  **Rooms** exist.
-3.  **Guests** can be created.
-4.  **Bookings** can be made, paid for, checked in, and checked out.
-
-
-
