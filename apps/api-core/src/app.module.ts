@@ -9,6 +9,11 @@ import { PropertyModule } from './modules/property/property.module';
 import { AuditModule } from './modules/audit/audit.module';
 import { UserModule } from './modules/user/user.module';
 import { AuthModule } from './modules/auth/auth.module';
+import { AmenityModule } from './modules/amenity/amenity.module';
+import { RoomTypeModule } from './modules/room-type/room-type.module';
+import { RoomModule } from './modules/room/room.module';
+import { GuestModule } from './modules/guest/guest.module';
+import { BookingModule } from './modules/booking/booking.module';
 import { AuditLogInterceptor } from './common/interceptors/audit-log.interceptor';
 
 @Module({
@@ -26,6 +31,11 @@ import { AuditLogInterceptor } from './common/interceptors/audit-log.interceptor
     PropertyModule,
     UserModule,
     AuthModule,
+    AmenityModule,
+    RoomTypeModule,
+    RoomModule,
+    GuestModule,
+    BookingModule,
   ],
   controllers: [AppController],
   providers: [
