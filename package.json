@@ -13,7 +13,10 @@
     "docker:down": "docker-compose down",
     "docker:logs": "docker-compose logs -f",
     "docker:restart": "docker-compose restart",
-    "clean": "rm -rf node_modules apps/*/node_modules apps/*/dist"
+    "clean": "rm -rf node_modules apps/*/node_modules apps/*/dist",
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "test:cov": "jest --coverage"
   },
   "devDependencies": {
     "concurrently": "^8.2.2"

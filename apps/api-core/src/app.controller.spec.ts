@@ -15,8 +15,20 @@ describe('AppController', () => {
   });
 
   describe('root', () => {
-    it('should return "Hello World!"', () => {
-      expect(appController.getHello()).toBe('Hello World!');
+    it('should return correct message', () => {
+      const result = appController.getHello();
+      expect(result).toContain('Blueberry HMS API');
+      expect(result).toContain('Blueberry Hills Resort');
+      expect(result).toContain('Mattel Group');
+    });
+  });
+
+  describe('health', () => {
+    it('should return health status', () => {
+      const result = appController.healthCheck();
+      expect(result).toHaveProperty('status', 'ok');
+      expect(result).toHaveProperty('service', 'Blueberry HMS API');
+      expect(result).toHaveProperty('version');
     });
   });
 });
