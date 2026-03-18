@@ -1,75 +1,65 @@
 import { Injectable, UnauthorizedException, ConflictException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import { UserService } from '../user/user.service';
-import { LoginDto } from './dto/login.dto';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+import { User } from '../user/entities/user.entity';
 import { RegisterDto } from './dto/register.dto';
+import { LoginDto } from './dto/login.dto';
 import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class AuthService {
   constructor(
-    private userService: UserService,
+    @InjectRepository(User)
+    private userRepository: Repository<User>,
     private jwtService: JwtService,
   ) {}
 
   async register(registerDto: RegisterDto) {
-    // Check if user exists
-    const existingUser = await this.userService.findByEmail(registerDto.email);
+    const existingUser = await this.userRepository.findOne({
+      where: { email: registerDto.email },
+    });
+
     if (existingUser) {
-      throw new ConflictException('Email already registered');
+      throw new ConflictException('Email already exists');
     }
 
-    // Hash password
     const hashedPassword = await bcrypt.hash(registerDto.password, 10);
 
-    // Create user
-    const user = await this.userService.create({
+    const user = this.userRepository.create({
       ...registerDto,
       password: hashedPassword,
-    } as any);
+    });
 
-    // Generate token
-    const token = this.generateToken(user);
+    const savedUser = await this.userRepository.save(user);
 
-    return {
-      access_token: token,
-      user: {
-        id: user.id,
-        email: user.email,
-        firstName: user.firstName,
-        lastName: user.lastName,
-        role: user.role,
-      },
-    };
+    const { password, ...result } = savedUser;
+    return result;
   }
 
   async login(loginDto: LoginDto) {
-    // Find user
-    const user = await this.userService.findByEmail(loginDto.email);
+    const user = await this.userRepository.findOne({
+      where: { email: loginDto.email },
+    });
+
     if (!user || !user.password) {
       throw new UnauthorizedException('Invalid credentials');
     }
 
-    // Verify password
-    const isPasswordValid = await bcrypt.compare(
-      loginDto.password,
-      user.password,
-    );
+    const isPasswordValid = await bcrypt.compare(loginDto.password, user.password);
 
     if (!isPasswordValid) {
       throw new UnauthorizedException('Invalid credentials');
     }
 
-    // Check if user is active
-    if (user.status !== 'ACTIVE') {
-      throw new UnauthorizedException('Account is not active');
-    }
-
-    // Generate token
-    const token = this.generateToken(user);
+    const payload = { 
+      sub: user.id, 
+      email: user.email,
+      role: user.role 
+    };
 
     return {
-      access_token: token,
+      access_token: this.jwtService.sign(payload),
       user: {
         id: user.id,
         email: user.email,
@@ -80,13 +70,7 @@ export class AuthService {
     };
   }
 
-  private generateToken(user: any): string {
-    const payload = {
-      sub: user.id,
-      email: user.email,
-      role: user.role,
-    };
-
-    return this.jwtService.sign(payload);
+  async validateUser(userId: string) {
+    return this.userRepository.findOne({ where: { id: userId } });
   }
 }
