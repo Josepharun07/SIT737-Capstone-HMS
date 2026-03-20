@@ -20,7 +20,7 @@
     "forceConsistentCasingInFileNames": true,
     "noImplicitAny": false,
     "strictBindCallApply": false,
-    "noFallthroughCasesInSwitch": false,
-    "verbatimModuleSyntax": true
+    "noFallthroughCasesInSwitch": false
+    
   }
 }
