@@ -75,3 +75,28 @@ export const bookingActions = {
   checkOut: bookingsApi.checkOut,
   cancel: bookingsApi.cancel,
 };
+
+export const paymentApi = {
+  recordPayment: async (bookingId: string, data: {
+    amount: number;
+    paymentMethod: string;
+    reference?: string;
+    notes?: string;
+  }) => {
+    const token = localStorage.getItem('auth-storage');
+    if (!token) throw new Error('No authentication token');
+
+    const parsed = JSON.parse(token);
+
+    const response = await axios.post(
+      getApiUrl(`/api/v1/bookings/${bookingId}/payments`),
+      data,
+      {
+        headers: {
+          Authorization: `Bearer ${parsed.state.token}`,
+        },
+      }
+    );
+    return response.data;
+  },
+};

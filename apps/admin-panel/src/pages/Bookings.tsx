@@ -1,13 +1,16 @@
+import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useAuthStore } from '../lib/store/authStore';
 import type { Booking } from '../types/booking.types';
 import { bookingActions } from '../lib/api/bookings';
-import { useState } from 'react';
+import { BookingDetailsModal } from '../components/bookings/BookingDetailsModal';
 
 export function Bookings() {
   const token = useAuthStore((s) => s.token);
   const queryClient = useQueryClient();
   const [actionLoading, setActionLoading] = useState<string | null>(null);
+  const [selectedBooking, setSelectedBooking] = useState<Booking | null>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   const { data: bookings, isLoading, error } = useQuery({
     queryKey: ['bookings'],
@@ -58,6 +61,11 @@ export function Bookings() {
     }
   };
 
+  const handleViewDetails = (booking: Booking) => {
+    setSelectedBooking(booking);
+    setIsModalOpen(true);
+  };
+
   const getStatusBadge = (status: string) => {
     const colors = {
       CONFIRMED: 'bg-blue-100 text-blue-800',
@@ -96,7 +104,7 @@ export function Bookings() {
     return (
       <div className="p-8">
         <div className="bg-red-50 border border-red-200 text-red-700 p-4 rounded">
-          ❌ Error loading bookings: {(error as Error).message}
+          Error loading bookings: {(error as Error).message}
         </div>
       </div>
     );
@@ -116,7 +124,7 @@ export function Bookings() {
           <thead className="bg-gray-50">
             <tr>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Confirmation #
+                Confirmation
               </th>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                 Guest
@@ -181,6 +189,12 @@ export function Bookings() {
                   ₹{booking.totalAmount}
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium space-x-2">
+                  <button 
+                    onClick={() => handleViewDetails(booking)}
+                    className="text-primary-600 hover:text-primary-900"
+                  >
+                    View
+                  </button>
                   {booking.status === 'CONFIRMED' && (
                     <button 
                       onClick={() => handleCheckIn(booking.id)}
@@ -199,9 +213,6 @@ export function Bookings() {
                       {actionLoading === booking.id ? 'Processing...' : 'Check Out'}
                     </button>
                   )}
-                  <button className="text-gray-600 hover:text-gray-900">
-                    View
-                  </button>
                 </td>
               </tr>
             ))}
@@ -214,6 +225,12 @@ export function Bookings() {
           No bookings found. Create your first booking to get started.
         </div>
       )}
+
+      <BookingDetailsModal
+        booking={selectedBooking}
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+      />
     </div>
   );
 }
