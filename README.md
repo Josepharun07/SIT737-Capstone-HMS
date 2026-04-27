@@ -1,9 +1,9 @@
 
-# 🫐 Blueberry Hotel Management System (Cloud-Native Capstone)
+#  Blueberry Hotel Management System (Cloud-Native Capstone)
 
 This repository contains the cloud-native deployment of the Blueberry Hotel Management System (HMS), developed for the **SIT323/SIT737 - Cloud Native Application Development** Capstone Project (Stage 1).
 
-## 🏗️ Project Scenario
+##  Project Scenario
 This project implements **Scenario 3: Two-Tier Application Deployment** from the capstone task sheet. It consists of a frontend web interface and a backend REST API communicating securely, backed by a persistent database.
 
 ### System Architecture
@@ -13,11 +13,11 @@ This project implements **Scenario 3: Two-Tier Application Deployment** from the
 
 ```mermaid
 graph TD
-    User([User / Browser]) -->|HTTP :80| Frontend[React Admin Panel \n Nginx Container]
-    Frontend -->|REST API :4000| Backend[NestJS API Core \n Node.js Container]
-    Backend -->|TCP :5432| DB[(PostgreSQL Database)]
+    User([User / Browser]) -->|HTTP :80| Frontend["React Admin Panel <br> Nginx Container"]
+    Frontend -->|REST API :4000| Backend["NestJS API Core <br> Node.js Container"]
+    Backend -->|TCP :5432| DB[("PostgreSQL Database")]
     
-    subgraph Google Kubernetes Engine (GKE)
+    subgraph GKE ["Google Kubernetes Engine (GKE)"]
         Frontend
         Backend
         DB
