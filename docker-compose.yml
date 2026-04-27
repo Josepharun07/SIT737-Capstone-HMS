@@ -1,80 +1,62 @@
+version: '3.8'
 
 services:
-  # === DATABASE ===
+  # === 1. DATABASE ===
   postgres:
     image: postgres:16-alpine
-    container_name: blueberry_postgres
+    container_name: hms_postgres
     restart: unless-stopped
     environment:
-      POSTGRES_USER: ${DB_USER}
-      POSTGRES_PASSWORD: ${DB_PASSWORD}
-      POSTGRES_DB: ${DB_NAME}
+      POSTGRES_USER: ${DB_USER:-blueberry_admin}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-blueberry123}
+      POSTGRES_DB: ${DB_NAME:-blueberry_hms}
     ports:
       - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
-      - ./services/database/init:/docker-entrypoint-initdb.d
     networks:
       - blueberry_network
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${DB_USER} -d ${DB_NAME}"]
+      test:
+        - "CMD-SHELL"
+        - "pg_isready -U blueberry_admin -d blueberry_hms"
       interval: 10s
       timeout: 5s
       retries: 5
 
-  # === REDIS (Cache & Queue) ===
-  redis:
-    image: redis:7-alpine
-    container_name: blueberry_redis
+  # === 2. BACKEND API ===
+  api-core:
+    build:
+      context: .
+      dockerfile: Dockerfile.api
+    container_name: hms_api_core
     restart: unless-stopped
-    ports:
-      - "6379:6379"
-    volumes:
-      - redis_data:/data
-    networks:
-      - blueberry_network
-    healthcheck:
-      test: ["CMD", "redis-cli", "ping"]
-      interval: 10s
-      timeout: 3s
-      retries: 5
-
-  # === AUTHENTICATION (Keycloak) ===
-  keycloak:
-    image: quay.io/keycloak/keycloak:23.0
-    container_name: blueberry_keycloak
-    restart: unless-stopped
-    command: start-dev
     environment:
-      KEYCLOAK_ADMIN: admin
-      KEYCLOAK_ADMIN_PASSWORD: admin
-      KC_DB: postgres
-      KC_DB_URL: jdbc:postgresql://postgres:5432/${DB_NAME}
-      KC_DB_USERNAME: ${DB_USER}
-      KC_DB_PASSWORD: ${DB_PASSWORD}
-      KC_HOSTNAME: localhost
-      KC_HTTP_ENABLED: true
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_USER: ${DB_USER:-blueberry_admin}
+      DB_PASSWORD: ${DB_PASSWORD:-blueberry123}
+      DB_NAME: ${DB_NAME:-blueberry_hms}
+      JWT_SECRET: ${JWT_SECRET:-blueberry_super_secret_key_capstone_2024}
     ports:
-      - "8080:8080"
+      - "4000:4000"
     depends_on:
       postgres:
         condition: service_healthy
     networks:
       - blueberry_network
 
-  # === DATABASE ADMIN ===
-  pgadmin:
-    image: dpage/pgadmin4:latest
-    container_name: blueberry_pgadmin
+  # === 3. FRONTEND ADMIN PANEL ===
+  admin-panel:
+    build:
+      context: .
+      dockerfile: Dockerfile.admin
+    container_name: hms_admin_panel
     restart: unless-stopped
-    environment:
-      PGADMIN_DEFAULT_EMAIL: admin@blueberryhillsmunnar.in
-      PGADMIN_DEFAULT_PASSWORD: admin
-      PGADMIN_CONFIG_SERVER_MODE: 'False'
     ports:
-      - "5050:80"
+      - "8080:80" # Maps local port 8080 to container port 80 (Nginx)
     depends_on:
-      - postgres
+      - api-core
     networks:
       - blueberry_network
 
@@ -84,4 +66,3 @@ networks:
 
 volumes:
   postgres_data:
-  redis_data:

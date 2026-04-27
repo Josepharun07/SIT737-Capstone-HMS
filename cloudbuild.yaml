@@ -1,0 +1,12 @@
+steps:
+  # Build and push API
+  - name: 'gcr.io/cloud-builders/docker'
+    args:['build', '-t', 'australia-southeast1-docker.pkg.dev/$PROJECT_ID/hms-repo/api-core:latest', '-f', 'Dockerfile.api', '.']
+  - name: 'gcr.io/cloud-builders/docker'
+    args:['push', 'australia-southeast1-docker.pkg.dev/$PROJECT_ID/hms-repo/api-core:latest']
+  
+  # Build and push Admin Panel
+  - name: 'gcr.io/cloud-builders/docker'
+    args:['build', '-t', 'australia-southeast1-docker.pkg.dev/$PROJECT_ID/hms-repo/admin-panel:latest', '-f', 'Dockerfile.admin', '.']
+  - name: 'gcr.io/cloud-builders/docker'
+    args:['push', 'australia-southeast1-docker.pkg.dev/$PROJECT_ID/hms-repo/admin-panel:latest']

@@ -1,0 +1,13 @@
+FROM node:18-alpine AS builder
+WORKDIR /app
+RUN npm install -g pnpm
+COPY . .
+RUN pnpm install
+# Build the React Admin Panel
+RUN pnpm run build --filter admin-panel
+
+# Use Nginx to serve the static frontend
+FROM nginx:alpine
+COPY --from=builder /app/apps/admin-panel/dist /usr/share/nginx/html
+EXPOSE 80
+CMD ["nginx", "-g", "daemon off;"]

@@ -1,6 +1,3 @@
-*.sh
-PROJECT_DOCUMENTATION.txt
-
 # Dependencies
 node_modules/
 .pnpm-store/
@@ -21,10 +18,6 @@ logs/
 *.log
 npm-debug.log*
 
-# Database
-*.db
-*.sqlite
-
 # OS files
 .DS_Store
 Thumbs.db
@@ -33,10 +26,7 @@ Thumbs.db
 .vscode/
 .idea/
 *.swp
-*.swo
 
-# Docker volumes
-uploads/
+# Docker volumes (Ignore local database data so it doesn't push to GitHub)
 postgres-data/
-
-
+uploads/
