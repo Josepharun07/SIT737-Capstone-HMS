@@ -86,6 +86,3 @@ This project is designed to be deployed to the Deakin-managed Google Cloud Platf
 1. **Continuous Integration:** Pushes to the `main` branch trigger Google Cloud Build (`cloudbuild.yaml`).
 2. **Build & Push:** Docker images are built and pushed to Google Artifact Registry.
 3. **Deployment:** Workloads are deployed to a Zonal GKE cluster (`e2-small` node) to optimize cloud resource usage under a strict budget constraints.
-```
-
-
