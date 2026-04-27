@@ -1,5 +1,4 @@
 
-```markdown
 # 🫐 Blueberry Hotel Management System (Cloud-Native Capstone)
 
 This repository contains the cloud-native deployment of the Blueberry Hotel Management System (HMS), developed for the **SIT323/SIT737 - Cloud Native Application Development** Capstone Project (Stage 1).
