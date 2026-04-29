@@ -1,13 +1,24 @@
 FROM node:18-alpine
 WORKDIR /app
-# Install pnpm
+
 RUN npm install -g pnpm
-# Copy workspace config and source code
+
 COPY . .
-# Install dependencies and build the API
+
+# 1. Install all workspace dependencies normally
 RUN pnpm install
-RUN pnpm run build --filter api-core
-# Expose API port
+
+# 2. Move DIRECTLY into the backend directory
+WORKDIR /app/apps/api-core
+
+# 3. Force a strict local installation of NestJS and TypeScript using npm
+# (This patches the NestJS missing binary bug)
+RUN npm install @nestjs/cli typescript
+
+# 4. Build the backend locally
+RUN npm run build
+
 EXPOSE 4000
-# Start the API
-CMD ["pnpm", "run", "start:api"]
+
+# 5. Start the backend locally
+CMD ["npm", "run", "start"]

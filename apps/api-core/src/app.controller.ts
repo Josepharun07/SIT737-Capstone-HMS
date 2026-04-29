@@ -1,23 +1,17 @@
 import { Controller, Get } from '@nestjs/common';
 import { AppService } from './app.service';
 
-@Controller()
+@Controller('api')
 export class AppController {
   constructor(private readonly appService: AppService) {}
 
-  @Get()
-  getHello(): string {
-    return this.appService.getHello();
-  }
-
-  @Get('health')
-  healthCheck() {
+  @Get('status')
+  getSystemStatus() {
     return {
-      status: 'ok',
+      system: 'Blueberry HMS',
+      status: 'Online',
+      message: 'Backend is successfully communicating with Frontend!',
       timestamp: new Date().toISOString(),
-      service: 'Blueberry HMS API',
-      property: 'Blueberry Hills Resort, Munnar',
-      version: '1.0.0',
     };
   }
 }

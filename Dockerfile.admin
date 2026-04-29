@@ -1,12 +1,24 @@
 FROM node:18-alpine AS builder
 WORKDIR /app
-RUN npm install -g pnpm
-COPY . .
-RUN pnpm install
-# Build the React Admin Panel
-RUN pnpm run build --filter admin-panel
 
-# Use Nginx to serve the static frontend
+RUN npm install -g pnpm
+
+COPY . .
+
+# 1. Install all workspace dependencies normally
+RUN pnpm install
+
+# 2. Move DIRECTLY into the frontend directory
+WORKDIR /app/apps/admin-panel
+
+# 3. Force a strict local installation of Vite and TypeScript using npm
+# (This patches the Vite hoisted-ESM resolution bug)
+RUN npm install typescript vite
+
+# 4. Build the frontend locally
+RUN npm run build
+
+# 5. Serve with Nginx
 FROM nginx:alpine
 COPY --from=builder /app/apps/admin-panel/dist /usr/share/nginx/html
 EXPOSE 80
