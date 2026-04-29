@@ -1,0 +1,44 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: api-core
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: api-core
+  template:
+    metadata:
+      labels:
+        app: api-core
+    spec:
+      containers:
+      - name: api-core
+        image: delvinjoseph07/capstone-api:latest
+        env:
+        - name: DB_HOST
+          value: "postgres"
+        - name: DB_PORT
+          value: "5432"
+        - name: DB_USER
+          value: "blueberry_admin"
+        - name: DB_PASSWORD
+          value: "blueberry123"
+        - name: DB_NAME
+          value: "blueberry_hms"
+        - name: JWT_SECRET
+          value: "blueberry_super_secret_key_capstone_2024"
+        ports:
+        - containerPort: 4000
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: api-core
+spec:
+  type: LoadBalancer
+  ports:
+  - port: 4000
+    targetPort: 4000
+  selector:
+    app: api-core

@@ -6,7 +6,7 @@ function App() {
   const [error, setError] = useState('');
 
   useEffect(() => {
-    const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:4000/api';
+    const apiUrl = import.meta.env.VITE_API_URL || 'http://35.189.43.55:4000/api';
 
     fetch(`${apiUrl}/status`)
       .then((res) => {
